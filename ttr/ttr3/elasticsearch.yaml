@@ -68,7 +68,10 @@ spec:
     spec:
       containers:
       - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.6.3
+        env:
+          - name: discovery.type
+            value: single-node
         volumeMounts:
         - name: vol-mnt-elasticsearch-dpi
           mountPath: /usr/share/elasticsearch/data
@@ -89,10 +92,9 @@ metadata:
   name: elasticsearch-service
   namespace: logging
   labels:
-    application: notifications
+    application: elasticsearch
     type: external
 spec:
-  type: NodePort
   ports:
   - port: 9200
     name: client
