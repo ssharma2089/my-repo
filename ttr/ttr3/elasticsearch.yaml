@@ -54,7 +54,6 @@ metadata:
   namespace: logging
   labels:
     application: elasticsearch
-    environment: development
     type: external
 spec:
   replicas: 1
@@ -66,9 +65,17 @@ spec:
       labels:
         app: elasticsearch
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "kubernetes.io/hostname"
+                    operator: In
+                    values: ["shishir-vm"]
       containers:
       - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.6.3
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.6.1
         env:
           - name: discovery.type
             value: single-node
@@ -84,7 +91,6 @@ spec:
         - name: vol-mnt-elasticsearch-dpi
           persistentVolumeClaim:
            claimName: pvc-elasticsearch-dpi
-
 ---
 apiVersion: v1
 kind: Service
@@ -117,5 +123,5 @@ spec:
      port: 9200
    - name: node
      port: 9300
----
 
+---
