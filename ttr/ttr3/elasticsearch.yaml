@@ -53,7 +53,7 @@ metadata:
   name: elasticsearch
   namespace: logging
   labels:
-    application: notifications
+    application: elasticsearch
     environment: development
     type: external
 spec:
