@@ -115,6 +115,5 @@ spec:
      port: 9200
    - name: node
      port: 9300
-
 ---
 
