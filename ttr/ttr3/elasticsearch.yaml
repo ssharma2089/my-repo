@@ -13,14 +13,14 @@ metadata:
   name: pv-elasticsearch-dpi
 spec:
   capacity:
-    storage: 25Gi
+    storage: 2Gi
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   volumeMode: Filesystem
   storageClassName: sc-elasticsearch-dpi
   local:
-    path: /data/dpi/elasticsearch/data
+    path: /home/shishir/dpi/elasticsearch/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -28,7 +28,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - mwsacc3
+          - shishir-vm
 
 ---
 
@@ -43,7 +43,7 @@ spec:
   storageClassName: sc-elasticsearch-dpi
   resources:
     requests:
-      storage: 25Gi
+      storage: 2Gi
 
 ---
 
@@ -53,7 +53,8 @@ metadata:
   name: elasticsearch
   namespace: logging
   labels:
-    application: elasticsearch
+    application: notifications
+    environment: development
     type: external
 spec:
   replicas: 1
@@ -65,20 +66,9 @@ spec:
       labels:
         app: elasticsearch
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: "kubernetes.io/hostname"
-                    operator: In
-                    values: ["mwsacc3"]
       containers:
       - name: elasticsearch
-        image: dpi/elasticsearch:7.6.2
-        env:
-          - name: discovery.type
-            value: single-node
+        image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
         volumeMounts:
         - name: vol-mnt-elasticsearch-dpi
           mountPath: /usr/share/elasticsearch/data
@@ -93,16 +83,16 @@ spec:
            claimName: pvc-elasticsearch-dpi
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
   name: elasticsearch-service
   namespace: logging
   labels:
-    application: elasticsearch
+    application: notifications
     type: external
 spec:
+  type: NodePort
   ports:
   - port: 9200
     name: client
@@ -112,7 +102,6 @@ spec:
     app: elasticsearch
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -128,3 +117,4 @@ spec:
      port: 9300
 
 ---
+
