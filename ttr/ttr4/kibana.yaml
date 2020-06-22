@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  namespace: logging
+  labels:
+    application: kibana
+    type: external
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+      - name: kibana
+        image: docker.elastic.co/kibana/kibana:7.6.2
+        ports:
+        - containerPort: 5601
+          name: web
+        env:
+          - name: ELASTICSEARCH_HOSTS
+            value: "http://elasticsearch-service:9200"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-service
+  namespace: logging
+  labels:
+    application: kibana
+    type: external
+spec:
+  ports:
+  - name: web
+    port: 5601
+  selector:
+    app: kibana
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kibana-ingress
+  namespace: logging
+  labels:
+    application: kibana
+    type: external
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: mwsdev-cluster-issuer
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    traefik.ingress.kubernetes.io/redirect-permanent: "true"
+spec:
+  tls:
+  - hosts:
+    - kibana.mwsdev.wipo.int
+    secretName: mwsdev-secret
+  rules:
+  - host: kibana.mwsdev.wipo.int
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kibana-service
+          servicePort: 5601
+
