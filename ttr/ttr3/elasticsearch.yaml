@@ -122,6 +122,6 @@ spec:
    - name: http
      port: 9200
    - name: node
-     port: 9600
+     port: 9700
 
 ---
