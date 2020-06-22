@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: kibana
-        image: docker.elastic.co/kibana/kibana:7.6.2
+        image: docker.elastic.co/kibana/kibana:7.6.1
         ports:
         - containerPort: 5601
           name: web
@@ -55,17 +55,17 @@ metadata:
     type: external
   annotations:
     kubernetes.io/ingress.class: traefik
-    cert-manager.io/cluster-issuer: mwsdev-cluster-issuer
+    cert-manager.io/cluster-issuer: ca-cluster-issuer
     traefik.ingress.kubernetes.io/frontend-entry-points: http,https
     traefik.ingress.kubernetes.io/redirect-entry-point: https
     traefik.ingress.kubernetes.io/redirect-permanent: "true"
 spec:
   tls:
   - hosts:
-    - kibana.mwsdev.wipo.int
-    secretName: mwsdev-secret
+    - kibana.example.com
+    secretName: ca-secret
   rules:
-  - host: kibana.mwsdev.wipo.int
+  - host: kibana.example.com
     http:
       paths:
       - path: /
