@@ -20,7 +20,7 @@ spec:
   volumeMode: Filesystem
   storageClassName: sc-elasticsearch-dpi
   local:
-    path: /home/shishir/dpi/elasticsearch/data
+    path: /home/shishir/dpi/elasticsearch
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -28,7 +28,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - shishir-vm
+          - shishir
 
 ---
 
@@ -72,7 +72,7 @@ spec:
               - matchExpressions:
                   - key: "kubernetes.io/hostname"
                     operator: In
-                    values: ["shishir-vm"]
+                    values: ["shishir"]
       containers:
       - name: elasticsearch
         image: docker.elastic.co/elasticsearch/elasticsearch:7.6.1
